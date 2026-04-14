@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>WebLAB</title>
+    <title>WebLAB | Горячие клавиши · Калькулятор · Аниматор · Вебка</title>
     <style>
         * {
             margin: 0;
@@ -91,6 +91,51 @@
             margin-left: auto;
             margin-right: auto;
             padding-bottom: 0.5rem;
+        }
+
+        /* ========== ТАБЛИЦА ГОРЯЧИХ КЛАВИШ ========== */
+        .hotkeys-section {
+            margin: 1rem 0 2rem 0;
+        }
+        .hotkeys-section h2 {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-size: 1.5rem;
+        }
+        .hotkeys-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0,0,0,0.4);
+            border-radius: 1.2rem;
+            overflow: hidden;
+        }
+        .hotkeys-table th, .hotkeys-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .hotkeys-table th {
+            background: rgba(108, 142, 255, 0.3);
+            font-weight: 600;
+            color: #c6e0ff;
+        }
+        .hotkeys-table kbd {
+            background: #1e1f3a;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: bold;
+            color: #ffdb9f;
+            box-shadow: inset 0 1px 0 #5f6ca0;
+        }
+        .win-cmd {
+            font-family: monospace;
+            background: #1e1f3a;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            color: #6c8eff;
         }
 
         .showcase-grid {
@@ -182,9 +227,6 @@
         .game-link-btn:hover { transform: scale(1.02); box-shadow: 0 0 15px #aa88ff; }
         .main-btn { background: linear-gradient(95deg, #4c5fd7, #6a4eff); border: none; padding: 0.8rem 1.8rem; border-radius: 3rem; font-weight: bold; color: white; margin-top: 1rem; cursor: pointer; display: block; margin-left: auto; margin-right: auto; }
         footer { text-align: center; margin-top: 2rem; font-size: 0.8rem; opacity: 0.6; }
-        .hotkeys-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.4); border-radius: 1.2rem; margin: 1rem 0; }
-        .hotkeys-table th, .hotkeys-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .hotkeys-table kbd { background: #1e1f3a; padding: 0.2rem 0.5rem; border-radius: 8px; font-family: monospace; color: #ffdb9f; }
         
         @media (max-width: 800px) { .piano-key { width: 45px; height: 80px; font-size: 0.7rem; } .calc-buttons button { padding: 0.5rem; font-size: 0.8rem; } }
     </style>
@@ -194,6 +236,34 @@
 <div class="main-card">
     <h1 class="glow-title">✨ WEB-ЛАБОРАТОРИЯ ✨</h1>
     <div class="sub">Мега-калькулятор · Аудиоплеер · Аниматор · Вебка · Конвертер</div>
+
+    <!-- ========== ТАБЛИЦА ГОРЯЧИХ КЛАВИШ (ВОЗВРАЩЕНА И РАСШИРЕНА) ========== -->
+    <div class="hotkeys-section">
+        <h2>⌨️ Горячие клавиши для кодеров и пользователей ПК</h2>
+        <table class="hotkeys-table">
+            <thead>
+                <tr><th>Комбинация</th><th>Действие</th><th>Где пригодится</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><kbd>Ctrl + C</kbd></td><td>Копировать</td><td>Везде (код, текст, файлы)</td></tr>
+                <tr><td><kbd>Ctrl + V</kbd></td><td>Вставить</td><td>Везде</td></tr>
+                <tr><td><kbd>Ctrl + X</kbd></td><td>Вырезать</td><td>Перемещение текста/файлов</td></tr>
+                <tr><td><kbd>Ctrl + Z</kbd></td><td>Отменить</td><td>Откат изменений в коде/тексте</td></tr>
+                <tr><td><kbd>Ctrl + Y</kbd> / <kbd>Ctrl + Shift + Z</kbd></td><td>Повторить</td><td>Вернуть отменённое действие</td></tr>
+                <tr><td><kbd>Ctrl + F</kbd></td><td>Поиск по странице</td><td>Быстрый поиск в документации/коде</td></tr>
+                <tr><td><kbd>Ctrl + Shift + I</kbd></td><td>Инструменты разработчика</td><td>Отладка HTML/CSS/JS</td></tr>
+                <tr><td><kbd>F12</kbd></td><td>Открыть DevTools</td><td>Анализ сайта, консоль</td></tr>
+                <tr><td><kbd>Ctrl + D</kbd></td><td>Выделить следующее совпадение</td><td>Множественное редактирование (VS Code)</td></tr>
+                <tr><td><kbd>Alt + Tab</kbd></td><td>Переключение между окнами</td><td>Быстрая навигация по приложениям</td></tr>
+                <tr><td><kbd>Win + V</kbd></td><td>История буфера обмена</td><td>Удобная вставка ранее скопированных фрагментов</td></tr>
+                <tr><td><kbd>Win + Shift + S</kbd></td><td>Снимок экрана (ножницы)</td><td>Скриншот области экрана</td></tr>
+                <tr><td><kbd>Win + D</kbd></td><td>Свернуть все окна / показать рабочий стол</td><td>Быстрый доступ к рабочему столу</td></tr>
+                <tr><td><kbd>Win + E</kbd></td><td>Открыть Проводник</td><td>Быстрый доступ к файлам</td></tr>
+                <tr><td><kbd>Win + R</kbd></td><td>Открыть окно «Выполнить»</td><td>Быстрый запуск программ и команд</td></tr>
+                <tr><td colspan="3" style="background: rgba(108,142,255,0.2);"><b>📌 Полезные команды Win+R:</b> &nbsp; <code class="win-cmd">cmd</code> — командная строка &nbsp;|&nbsp; <code class="win-cmd">notepad</code> — Блокнот &nbsp;|&nbsp; <code class="win-cmd">calc</code> — Калькулятор &nbsp;|&nbsp; <code class="win-cmd">mspaint</code> — Paint &nbsp;|&nbsp; <code class="win-cmd">control</code> — Панель управления &nbsp;|&nbsp; <code class="win-cmd">%temp%</code> — временные файлы &nbsp;|&nbsp; <code class="win-cmd">regedit</code> — Редактор реестра</td></tr>
+            </tbody>
+        </table>
+    </div>
 
     <div class="showcase-grid">
         <div class="demo-card">
@@ -295,7 +365,7 @@
     </div>
 
     <button class="main-btn" id="inspireBtn">✨ О лаборатории ✨</button>
-    <footer>Калькулятор · Аудиоплеер · АНИМАТОР · ВЕБКА · Микро · Конвертер</footer>
+    <footer>Калькулятор · Аудиоплеер · АНИМАТОР · ВЕБКА · Микро · Конвертер · Горячие клавиши</footer>
 </div>
 
 <script>
@@ -303,7 +373,7 @@
     function createParticle() {
         const particle = document.createElement('div');
         particle.classList.add('particle');
-        const icons = ['✨', '⭐', '💎', '🎨', '🎬', '📷', '🎵'];
+        const icons = ['✨', '⭐', '💎', '🎨', '🎬', '📷', '🎵', '⌨️'];
         particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
         particle.style.left = Math.random() * 100 + '%';
         particle.style.fontSize = (Math.random() * 20 + 12) + 'px';
@@ -429,7 +499,7 @@
     
     const brightSlider = document.getElementById('brightSlider'); const colorBox = document.getElementById('colorBox');
     brightSlider.oninput = (e) => colorBox.style.filter = `brightness(${e.target.value})`;
-    document.getElementById('inspireBtn').onclick = () => alert('✨ ВЕБ-ЛАБОРАТОРИЯ: калькулятор, плеер, АНИМАТОР (рисуй кадры и смотри мультик!), вебка, микро, конвертер. Игры в отдельных файлах!');
+    document.getElementById('inspireBtn').onclick = () => alert('✨ ВЕБ-ЛАБОРАТОРИЯ: калькулятор, плеер, АНИМАТОР (рисуй кадры и смотри мультик!), вебка, микро, конвертер. Горячие клавиши — выше!');
 
     // ========== КНОПКИ "КОД" С ОПИСАНИЯМИ ==========
     const codeSnippets = {
