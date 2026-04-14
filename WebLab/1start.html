@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>WebLAB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: radial-gradient(circle at 30% 10%, #0a0f2a, #030617);
+            --card-bg: rgba(20, 25, 55, 0.65);
+            --glass-border: 1px solid rgba(100, 150, 255, 0.25);
+            --accent: #6c8eff;
+            --text-light: #f0f3ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 1rem;
+            animation: floatParticle linear forwards;
+            opacity: 0.4;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .main-card {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: var(--glass-border);
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glow-title {
+            font-size: clamp(2rem, 8vw, 3.8rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #b2a5ff, #6c8eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 5px rgba(108, 142, 255, 0.3);}
+            100% { text-shadow: 0 0 25px rgba(155, 110, 255, 0.6);}
+        }
+
+        .sub {
+            text-align: center;
+            opacity: 0.85;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.8rem;
+            margin: 2rem 0;
+        }
+
+        .demo-card {
+            background: rgba(10, 15, 35, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid rgba(255,255,240,0.2);
+            margin-bottom: 1rem;
+            padding-bottom: 0.4rem;
+        }
+
+        .demo-header h3 {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .code-btn {
+            background: #2a2f4e;
+            border: none;
+            color: #cbd5ff;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        .code-btn:hover { background: var(--accent); color: white; }
+
+        .calculator { background: rgba(0, 0, 0, 0.4); border-radius: 1.2rem; padding: 1rem; }
+        .calc-display { background: #0a0c1a; padding: 0.8rem; border-radius: 1rem; font-size: 1.8rem; text-align: right; font-family: monospace; margin-bottom: 0.5rem; word-break: break-all; min-height: 70px; }
+        .calc-history { font-size: 0.7rem; opacity: 0.7; text-align: right; margin-bottom: 0.8rem; font-family: monospace; min-height: 20px; }
+        .calc-buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+        .calc-buttons button { background: #1e1f36; border: none; padding: 0.7rem; border-radius: 1rem; font-size: 1rem; font-weight: bold; color: white; cursor: pointer; transition: 0.1s; }
+        .calc-buttons button:hover { background: var(--accent); transform: scale(0.97); }
+        .calc-buttons .equals { background: #4c5fd7; grid-column: span 2; }
+        .calc-buttons .clear { background: #a03e5c; }
+
+        .audio-player { background: rgba(0, 0, 0, 0.4); border-radius: 1.2rem; padding: 1rem; }
+        .audio-controls { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin: 0.5rem 0; }
+        .audio-controls button { background: #2a2f4e; border: none; padding: 0.4rem 1rem; border-radius: 2rem; cursor: pointer; color: white; }
+        .volume-control { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.3); padding: 0.2rem 0.8rem; border-radius: 2rem; }
+        input[type="range"] { flex: 1; min-width: 100px; cursor: pointer; }
+        .speed-control { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+        .piano { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-top: 0.8rem; }
+        .piano-key { background: #2a2f4e; width: 55px; height: 100px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 10px; cursor: pointer; border: 1px solid #6c8eff; transition: 0.05s; }
+        .piano-key:active { transform: scale(0.95); background: #6c8eff; }
+
+        .animator-panel { background: rgba(0, 0, 0, 0.4); border-radius: 1.2rem; padding: 1rem; }
+        .canvas-container { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .draw-canvas { background: #fff; border-radius: 0.5rem; cursor: crosshair; image-rendering: crisp-edges; image-rendering: pixelated; }
+        .frames-list { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.8rem 0; }
+        .frame-thumb { width: 60px; height: 60px; background: #1e1f36; border-radius: 0.5rem; cursor: pointer; text-align: center; font-size: 0.7rem; padding: 0.2rem; border: 2px solid transparent; }
+        .frame-thumb.active { border-color: #6c8eff; background: #2a2f4e; }
+        .color-picker { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 0.5rem 0; align-items: center; }
+        .color-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
+        .tool-btn { background: #2a2f4e; border: none; padding: 0.3rem 0.8rem; border-radius: 1rem; color: white; cursor: pointer; }
+
+        .webcam-panel { background: rgba(0, 0, 0, 0.4); border-radius: 1.2rem; padding: 1rem; text-align: center; }
+        video, #webcamCanvas { border-radius: 1rem; background: #0a0c1a; max-width: 100%; }
+        .webcam-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem; }
+
+        .converter-panel { background: rgba(0,0,0,0.35); border-radius: 1.2rem; padding: 1rem; }
+        .converter-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin: 0.8rem 0; align-items: center; }
+        select, input { background: #1e1f36; border: 1px solid #4f5b9e; padding: 0.5rem; border-radius: 1rem; color: white; }
+        .game-portal-section { background: rgba(0, 0, 0, 0.35); border-radius: 2rem; padding: 1.2rem; margin: 2rem 0; }
+        .games-grid { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+        .game-link-btn { background: linear-gradient(95deg, #6f5fe0, #9b4dff); border: none; padding: 0.7rem 1.5rem; border-radius: 2rem; color: white; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.2s; }
+        .game-link-btn:hover { transform: scale(1.02); box-shadow: 0 0 15px #aa88ff; }
+        .main-btn { background: linear-gradient(95deg, #4c5fd7, #6a4eff); border: none; padding: 0.8rem 1.8rem; border-radius: 3rem; font-weight: bold; color: white; margin-top: 1rem; cursor: pointer; display: block; margin-left: auto; margin-right: auto; }
+        footer { text-align: center; margin-top: 2rem; font-size: 0.8rem; opacity: 0.6; }
+        .hotkeys-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.4); border-radius: 1.2rem; margin: 1rem 0; }
+        .hotkeys-table th, .hotkeys-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .hotkeys-table kbd { background: #1e1f3a; padding: 0.2rem 0.5rem; border-radius: 8px; font-family: monospace; color: #ffdb9f; }
+        
+        @media (max-width: 800px) { .piano-key { width: 45px; height: 80px; font-size: 0.7rem; } .calc-buttons button { padding: 0.5rem; font-size: 0.8rem; } }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h1 class="glow-title">✨ WEB-ЛАБОРАТОРИЯ ✨</h1>
+    <div class="sub">Мега-калькулятор · Аудиоплеер · Аниматор · Вебка · Конвертер</div>
+
+    <div class="showcase-grid">
+        <div class="demo-card">
+            <div class="demo-header"><h3>🧮 Калькулятор</h3><button class="code-btn" data-target="calc-code">📄 код</button></div>
+            <div class="calculator">
+                <div class="calc-history" id="calcHistory"></div>
+                <div class="calc-display" id="calcDisplay">0</div>
+                <div class="calc-buttons" id="calcButtons"></div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-header"><h3>🎵 Аудиоплеер + Пианино</h3><button class="code-btn" data-target="music-code">📄 код</button></div>
+            <div class="audio-player">
+                <audio id="radioPlayer" src="Radio10H.mp3" preload="metadata"></audio>
+                <div class="audio-controls"><button id="playPauseBtn">▶️ Плей</button><button id="stopBtn">⏹️ Стоп</button><span>⏪</span><input type="range" id="seekSlider" value="0" step="0.01"><span>⏩</span></div>
+                <div class="audio-controls"><div class="volume-control"><span>🔊</span><input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7"><span id="volumeValue">70%</span></div></div>
+                <div class="speed-control"><span>⏩ Скорость:</span><button id="speedDown">0.5x</button><button id="speedNorm">1x</button><button id="speedUp">1.5x</button><button id="speedUp2">2x</button></div>
+                <div><strong>🎹 Пианино</strong></div>
+                <div class="piano" id="pianoContainer"></div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-header"><h3>🎬 Аниматор</h3><button class="code-btn" data-target="anim-code">📄 код</button></div>
+            <div class="animator-panel">
+                <div class="canvas-container">
+                    <canvas id="drawCanvas" width="200" height="200" class="draw-canvas" style="border:2px solid #6c8eff;"></canvas>
+                    <div style="text-align:center;">
+                        <div class="frames-list" id="framesList"></div>
+                        <div class="color-picker">
+                            <span>🎨</span>
+                            <div class="color-btn" style="background:#000;"></div><div class="color-btn" style="background:#f00;"></div>
+                            <div class="color-btn" style="background:#0f0;"></div><div class="color-btn" style="background:#00f;"></div>
+                            <div class="color-btn" style="background:#ff0;"></div><div class="color-btn" style="background:#f0f;"></div>
+                            <div class="color-btn" style="background:#fff;"></div>
+                        </div>
+                        <div>
+                            <button class="tool-btn" id="pencilBtn">✏️ Карандаш</button>
+                            <button class="tool-btn" id="eraserBtn">🧽 Ластик</button>
+                            <button class="tool-btn" id="clearFrameBtn">🗑️ Очистить кадр</button>
+                            <button class="tool-btn" id="addFrameBtn">➕ Добавить кадр</button>
+                            <button class="tool-btn" id="deleteFrameBtn">❌ Удалить кадр</button>
+                        </div>
+                        <div style="margin-top:0.5rem;">
+                            <span>▶️ Анимация:</span>
+                            <input type="range" id="animSpeed" min="50" max="500" value="150" style="width:100px;">
+                            <button id="playAnimBtn">🎬 Воспроизвести</button>
+                            <button id="stopAnimBtn">⏹️ Стоп</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-header"><h3>📷 Вебка + Микро</h3><button class="code-btn" data-target="webcam-code">📄 код</button></div>
+            <div class="webcam-panel">
+                <video id="webcam" autoplay playsinline muted width="320" height="240" style="display:none;"></video>
+                <canvas id="webcamCanvas" width="320" height="240"></canvas>
+                <div class="webcam-buttons">
+                    <button id="startWebcamBtn">🎥 Включить вебку</button>
+                    <button id="snapshotBtn">📸 Сделать снимок</button>
+                    <button id="stopWebcamBtn">⏹️ Выключить</button>
+                </div>
+                <div style="margin-top:0.5rem;">
+                    <button id="startMicBtn">🎤 Тест микро</button>
+                    <button id="stopMicBtn">⏹️ Остановить</button>
+                    <div id="micLevel" style="margin-top:0.5rem; height:10px; background:#1e1f36; border-radius:5px; overflow:hidden;"><div id="micLevelFill" style="width:0%; height:100%; background:#6c8eff; transition:0.05s;"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-header"><h3>🔄 Конвертер</h3><button class="code-btn" data-target="conv-code">📄 код</button></div>
+            <div class="converter-panel">
+                <div class="converter-row"><label>Категория:</label><select id="convCategory"><option value="length">📏 Длина</option><option value="mass">⚖️ Масса</option><option value="time">⏱️ Время</option><option value="temperature">🌡️ Температура</option><option value="speed">🚀 Скорость</option></select></div>
+                <div class="converter-row"><input type="number" id="convValue" value="1"><select id="convFrom"></select><span>➡️</span><select id="convTo"></select></div>
+                <div class="convert-result" id="convResult" style="background:#0f1225; padding:0.5rem; border-radius:1rem; text-align:center; font-weight:bold;">Результат: --</div>
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <div class="demo-header"><h3>⚡ CSS/JS динамика</h3><button class="code-btn" data-target="dynamic-code">📄 код</button></div>
+            <div><input type="range" id="brightSlider" min="0.5" max="1.5" step="0.01" value="1"><div id="colorBox" style="width: 60px; height: 60px; background: #6c8eff; margin-top: 8px; border-radius: 12px;"></div><p>Слайдер → яркость</p></div>
+        </div>
+    </div>
+
+    <div class="game-portal-section">
+        <h2>🎮 Игровой портал</h2>
+        <div class="games-grid">
+            <a href="snake.html" class="game-link-btn" target="_blank">🐍 Змейка</a>
+            <a href="tetris.html" class="game-link-btn" target="_blank">🧩 Тетрис</a>
+            <a href="tic-tac-toe.html" class="game-link-btn" target="_blank">❌ Крестики-нолики</a>
+            <a href="arkanoid.html" class="game-link-btn" target="_blank">🏓 Арканоид</a>
+            <a href="flappy-bird.html" class="game-link-btn" target="_blank">🐦 Flappy Bird</a>
+            <a href="2048.html" class="game-link-btn" target="_blank">🔢 2048</a>
+        </div>
+    </div>
+
+    <button class="main-btn" id="inspireBtn">✨ О лаборатории ✨</button>
+    <footer>Калькулятор · Аудиоплеер · АНИМАТОР · ВЕБКА · Микро · Конвертер</footer>
+</div>
+
+<script>
+    // ========== ЧАСТИЦЫ ==========
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const icons = ['✨', '⭐', '💎', '🎨', '🎬', '📷', '🎵'];
+        particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.fontSize = (Math.random() * 20 + 12) + 'px';
+        particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 10000);
+    }
+    setInterval(createParticle, 800);
+    for (let i = 0; i < 15; i++) setTimeout(createParticle, i * 200);
+
+    // ========== КАЛЬКУЛЯТОР ==========
+    let calcExpr = '0';
+    const calcDisplay = document.getElementById('calcDisplay');
+    const calcHistory = document.getElementById('calcHistory');
+    function updateCalc() { calcDisplay.innerText = calcExpr.slice(0, 30); }
+    function handleCalc(v) {
+        if (v === 'C') { calcExpr = '0'; updateCalc(); calcHistory.innerText = ''; return; }
+        if (v === '⌫') { calcExpr = calcExpr.length > 1 ? calcExpr.slice(0, -1) : '0'; updateCalc(); return; }
+        if (v === '=') { try { let res = eval(calcExpr.replace(/×/g, '*').replace(/÷/g, '/')); calcHistory.innerText = calcExpr + ' = ' + res; calcExpr = String(res); updateCalc(); } catch(e) { calcExpr = 'Ошибка'; updateCalc(); setTimeout(() => { calcExpr = '0'; updateCalc(); }, 1000); } return; }
+        if (calcExpr === '0' && !isNaN(v) && v !== '.') calcExpr = v;
+        else calcExpr += v;
+        updateCalc();
+    }
+    const btns = ['7','8','9','÷','4','5','6','×','1','2','3','-','0','.','⌫','+','C','='];
+    const btnCont = document.getElementById('calcButtons');
+    btns.forEach(b => { let btn = document.createElement('button'); btn.textContent = b; if (b === '=') btn.classList.add('equals'); if (b === 'C') btn.classList.add('clear'); btn.onclick = () => handleCalc(b); btnCont.appendChild(btn); });
+
+    // ========== АУДИОПЛЕЕР ==========
+    const audio = document.getElementById('radioPlayer');
+    const playBtn = document.getElementById('playPauseBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const seek = document.getElementById('seekSlider');
+    playBtn.onclick = () => { if (audio.paused) { audio.play(); playBtn.textContent = '⏸️ Пауза'; } else { audio.pause(); playBtn.textContent = '▶️ Плей'; } };
+    stopBtn.onclick = () => { audio.pause(); audio.currentTime = 0; playBtn.textContent = '▶️ Плей'; };
+    audio.addEventListener('timeupdate', () => { if (audio.duration) seek.value = audio.currentTime / audio.duration; });
+    seek.oninput = () => { audio.currentTime = seek.value * audio.duration; };
+    document.getElementById('speedDown').onclick = () => audio.playbackRate = 0.5;
+    document.getElementById('speedNorm').onclick = () => audio.playbackRate = 1;
+    document.getElementById('speedUp').onclick = () => audio.playbackRate = 1.5;
+    document.getElementById('speedUp2').onclick = () => audio.playbackRate = 2;
+    const volSlider = document.getElementById('volumeSlider');
+    const volVal = document.getElementById('volumeValue');
+    volSlider.oninput = () => { audio.volume = volSlider.value; volVal.innerText = Math.round(volSlider.value * 100) + '%'; };
+
+    // ========== ПИАНИНО ==========
+    let audioCtx = null;
+    function playNote(freq) { if (!audioCtx) audioCtx = new (AudioContext || webkitAudioContext)(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.connect(gain); gain.connect(audioCtx.destination); osc.frequency.value = freq; gain.gain.value = 0.2; osc.start(); gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.6); osc.stop(audioCtx.currentTime + 0.6); }
+    const pianoNotes = [
+        { note: 'C', freq: 261.63 }, { note: 'D', freq: 293.66 }, { note: 'E', freq: 329.63 },
+        { note: 'F', freq: 349.23 }, { note: 'G', freq: 392.00 }, { note: 'A', freq: 440.00 },
+        { note: 'B', freq: 493.88 }, { note: 'C5', freq: 523.25 }
+    ];
+    pianoNotes.forEach(n => {
+        const key = document.createElement('div');
+        key.className = 'piano-key';
+        key.innerHTML = `<span style="font-size:1rem; font-weight:bold;">${n.note}</span><span style="font-size:0.6rem;">${Math.round(n.freq)}Hz</span>`;
+        key.onclick = () => playNote(n.freq);
+        document.getElementById('pianoContainer').appendChild(key);
+    });
+
+    // ========== АНИМАТОР ==========
+    let frames = [];
+    let currentFrame = 0;
+    let drawing = false;
+    let currentColor = '#000';
+    let currentTool = 'pencil';
+    const drawCanvas = document.getElementById('drawCanvas');
+    const ctxDraw = drawCanvas.getContext('2d');
+    ctxDraw.imageSmoothingEnabled = false;
+    
+    function initEmptyFrame() { const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 200; const ctx = canvas.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0,0,200,200); return canvas; }
+    function saveFrameToData() { frames[currentFrame] = drawCanvas.toDataURL(); }
+    function loadFrame(index) { const img = new Image(); img.onload = () => { ctxDraw.drawImage(img, 0, 0); }; img.src = frames[index]; }
+    function renderFramesList() { const container = document.getElementById('framesList'); container.innerHTML = ''; frames.forEach((f, i) => { const div = document.createElement('div'); div.className = 'frame-thumb' + (i === currentFrame ? ' active' : ''); div.innerHTML = `${i+1}<br><canvas width="50" height="50" style="width:50px;height:50px;"></canvas>`; const thumbCtx = div.querySelector('canvas').getContext('2d'); const img = new Image(); img.onload = () => thumbCtx.drawImage(img, 0, 0, 50, 50); img.src = f; div.onclick = () => { saveFrameToData(); currentFrame = i; loadFrame(currentFrame); renderFramesList(); }; container.appendChild(div); }); }
+    function addFrame() { saveFrameToData(); const newCanvas = initEmptyFrame(); const newData = newCanvas.toDataURL(); frames.push(newData); currentFrame = frames.length - 1; loadFrame(currentFrame); renderFramesList(); }
+    function deleteFrame() { if (frames.length <= 1) return; frames.splice(currentFrame, 1); if (currentFrame >= frames.length) currentFrame = frames.length - 1; loadFrame(currentFrame); renderFramesList(); }
+    function clearCurrentFrame() { ctxDraw.fillStyle = '#fff'; ctxDraw.fillRect(0,0,200,200); saveFrameToData(); }
+    
+    function drawPixel(e) { if (!drawing) return; const rect = drawCanvas.getBoundingClientRect(); const scaleX = drawCanvas.width / rect.width; const scaleY = drawCanvas.height / rect.height; let x, y; if (e.touches) { x = (e.touches[0].clientX - rect.left) * scaleX; y = (e.touches[0].clientY - rect.top) * scaleY; } else { x = (e.clientX - rect.left) * scaleX; y = (e.clientY - rect.top) * scaleY; } if (x < 0 || x >= 200 || y < 0 || y >= 200) return; ctxDraw.fillStyle = currentTool === 'eraser' ? '#fff' : currentColor; ctxDraw.fillRect(Math.floor(x), Math.floor(y), 4, 4); saveFrameToData(); }
+    drawCanvas.addEventListener('mousedown', (e) => { drawing = true; drawPixel(e); e.preventDefault(); });
+    window.addEventListener('mouseup', () => drawing = false);
+    drawCanvas.addEventListener('mousemove', (e) => { if (drawing) drawPixel(e); });
+    drawCanvas.addEventListener('touchstart', (e) => { drawing = true; drawPixel(e); e.preventDefault(); });
+    drawCanvas.addEventListener('touchmove', (e) => { drawPixel(e); e.preventDefault(); });
+    window.addEventListener('touchend', () => drawing = false);
+    
+    frames = [initEmptyFrame().toDataURL()];
+    loadFrame(0);
+    renderFramesList();
+    document.getElementById('addFrameBtn').onclick = addFrame;
+    document.getElementById('deleteFrameBtn').onclick = deleteFrame;
+    document.getElementById('clearFrameBtn').onclick = clearCurrentFrame;
+    document.querySelectorAll('.color-btn').forEach(btn => { btn.onclick = () => { currentColor = btn.style.backgroundColor; currentTool = 'pencil'; }; });
+    document.getElementById('pencilBtn').onclick = () => currentTool = 'pencil';
+    document.getElementById('eraserBtn').onclick = () => currentTool = 'eraser';
+    
+    let animInterval = null;
+    document.getElementById('playAnimBtn').onclick = () => { if (animInterval) clearInterval(animInterval); const speed = parseInt(document.getElementById('animSpeed').value); let animFrame = 0; animInterval = setInterval(() => { loadFrame(animFrame); currentFrame = animFrame; renderFramesList(); animFrame = (animFrame + 1) % frames.length; }, speed); };
+    document.getElementById('stopAnimBtn').onclick = () => { if (animInterval) { clearInterval(animInterval); animInterval = null; } };
+
+    // ========== ВЕБКА И МИКРО ==========
+    const video = document.getElementById('webcam');
+    const webcamCanvas = document.getElementById('webcamCanvas');
+    const webcamCtx = webcamCanvas.getContext('2d');
+    let stream = null;
+    document.getElementById('startWebcamBtn').onclick = async () => { try { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); video.srcObject = stream; video.style.display = 'block'; webcamCanvas.style.display = 'none'; } catch(e) { alert('Ошибка доступа к камере'); } };
+    document.getElementById('snapshotBtn').onclick = () => { if (video.srcObject) { webcamCtx.drawImage(video, 0, 0, 320, 240); video.style.display = 'none'; webcamCanvas.style.display = 'block'; } };
+    document.getElementById('stopWebcamBtn').onclick = () => { if (stream) { stream.getTracks().forEach(t => t.stop()); video.srcObject = null; video.style.display = 'none'; webcamCanvas.style.display = 'block'; } };
+    
+    let micStream = null;
+    let micContext = null;
+    let micSource = null;
+    let micAnimation = null;
+    document.getElementById('startMicBtn').onclick = async () => { try { micStream = await navigator.mediaDevices.getUserMedia({ audio: true }); micContext = new AudioContext(); micSource = micContext.createMediaStreamSource(micStream); const analyser = micContext.createAnalyser(); analyser.fftSize = 256; micSource.connect(analyser); const dataArray = new Uint8Array(analyser.frequencyBinCount); function updateMic() { analyser.getByteFrequencyData(dataArray); let avg = 0; for (let i = 0; i < dataArray.length; i++) avg += dataArray[i]; avg /= dataArray.length; const percent = Math.min(100, (avg / 255) * 100); document.getElementById('micLevelFill').style.width = percent + '%'; micAnimation = requestAnimationFrame(updateMic); } updateMic(); micContext.resume(); } catch(e) { alert('Ошибка доступа к микрофону'); } };
+    document.getElementById('stopMicBtn').onclick = () => { if (micStream) { micStream.getTracks().forEach(t => t.stop()); if (micAnimation) cancelAnimationFrame(micAnimation); micContext?.close(); micStream = null; document.getElementById('micLevelFill').style.width = '0%'; } };
+
+    // ========== КОНВЕРТЕР ==========
+    const convData = { length: { units: ['м', 'км', 'см', 'мили'], factors: [1, 1000, 0.01, 1609.34] }, mass: { units: ['г', 'кг', 'т', 'фунты'], factors: [1, 1000, 1e6, 453.592] }, time: { units: ['с', 'мин', 'ч'], factors: [1, 60, 3600] }, speed: { units: ['м/с', 'км/ч', 'узлы'], factors: [1, 0.27778, 0.51444] }, temperature: { units: ['°C', '°F', 'K'], special: true } };
+    const catSel = document.getElementById('convCategory'); const fromSel = document.getElementById('convFrom'); const toSel = document.getElementById('convTo'); const convVal = document.getElementById('convValue'); const convRes = document.getElementById('convResult');
+    function updateUnits() { const cat = catSel.value; const data = convData[cat]; fromSel.innerHTML = ''; toSel.innerHTML = ''; data.units.forEach(u => { fromSel.add(new Option(u, u)); toSel.add(new Option(u, u)); }); if (cat === 'temperature') { fromSel.value = '°C'; toSel.value = '°F'; } else { fromSel.value = data.units[0]; toSel.value = data.units[1]; } convert(); }
+    function convert() { let val = parseFloat(convVal.value); if (isNaN(val)) { convRes.innerText = 'Введите число'; return; } const cat = catSel.value; const fromU = fromSel.value, toU = toSel.value; if (cat === 'temperature') { let c; if (fromU === '°C') c = val; else if (fromU === '°F') c = (val - 32) * 5/9; else c = val - 273.15; if (c < -273.15) { convRes.innerText = 'Ниже абсолютного нуля'; return; } let res; if (toU === '°C') res = c; else if (toU === '°F') res = c * 9/5 + 32; else res = c + 273.15; convRes.innerText = `Результат: ${res.toFixed(4)} ${toU}`; return; } const data = convData[cat]; const idxFrom = data.units.indexOf(fromU); const idxTo = data.units.indexOf(toU); if (val < 0) { convRes.innerText = 'Только положительные'; return; } const base = val * data.factors[idxFrom]; const result = base / data.factors[idxTo]; convRes.innerText = `Результат: ${result.toExponential(6)} ${toU}`; }
+    catSel.addEventListener('change', updateUnits); fromSel.addEventListener('change', convert); toSel.addEventListener('change', convert); convVal.addEventListener('input', convert); updateUnits();
+    
+    const brightSlider = document.getElementById('brightSlider'); const colorBox = document.getElementById('colorBox');
+    brightSlider.oninput = (e) => colorBox.style.filter = `brightness(${e.target.value})`;
+    document.getElementById('inspireBtn').onclick = () => alert('✨ ВЕБ-ЛАБОРАТОРИЯ: калькулятор, плеер, АНИМАТОР (рисуй кадры и смотри мультик!), вебка, микро, конвертер. Игры в отдельных файлах!');
+
+    // ========== КНОПКИ "КОД" С ОПИСАНИЯМИ ==========
+    const codeSnippets = {
+        'calc-code': `// КАЛЬКУЛЯТОР
+// Функции: ввод цифр, операции (+, -, ×, ÷), очистка (C), удаление (⌫)
+// Поддержка клавиатуры: цифры, Enter, Escape, Backspace, + - * /
+// История вычислений отображается над дисплеем`,
+        
+        'music-code': `// АУДИОПЛЕЕР + ПИАНИНО
+// Управление: play/pause, stop, перемотка, скорость 0.5-2x
+// Громкость регулируется отдельным слайдером
+// Пианино: 8 нот через Web Audio API (C D E F G A B C5)
+// Частоты: 261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25 Гц`,
+        
+        'anim-code': `// АНИМАТОР (кадр за кадром)
+// Рисование: карандаш, ластик, выбор цвета (палитра 7 цветов)
+// Управление кадрами: добавить, удалить, очистить текущий
+// Анимация: воспроизведение с регулируемой скоростью (50-500 мс/кадр)
+// Кадры сохраняются в base64, можно переключаться кликом по миниатюре`,
+        
+        'webcam-code': `// ВЕБКА + МИКРО
+// Веб-камера: включение, стоп-кадр (снимок), выключение
+// Использует MediaDevices API: getUserMedia({ video: true })
+// Микрофон: тест уровня громкости с визуализацией
+// Анализатор частот показывает текущую громкость в реальном времени`,
+        
+        'conv-code': `// КОНВЕРТЕР
+// Категории: длина, масса, время, температура, скорость
+// Для температуры: формулы перевода °C ↔ °F ↔ K
+// Для остальных: коэффициенты перевода в базовую единицу
+// Ограничения: положительные числа (кроме температуры)`,
+        
+        'dynamic-code': `// CSS/JS ДИНАМИКА
+// Слайдер регулирует CSS filter: brightness()
+// Демонстрирует динамическое изменение стилей через JS
+// value привязывается к свойству filter`
+    };
+
+    function showCode(snippetId) {
+        const content = codeSnippets[snippetId] || '// Код для этого модуля';
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.background = 'rgba(0,0,0,0.85)';
+        modal.style.backdropFilter = 'blur(10px)';
+        modal.style.zIndex = '2000';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.innerHTML = `<div style="background:#0a0c1a; border-radius:1.5rem; max-width:80vw; width:600px; padding:1.5rem; border:1px solid #6c8eff;">
+            <button class="close-modal" style="float:right; background:#ff5e7e; border:none; padding:0.2rem 0.8rem; border-radius:2rem; cursor:pointer;">✖ закрыть</button>
+            <h4 style="color:#fff; margin-bottom:0.5rem;">📜 Исходный код модуля</h4>
+            <pre style="background:#010015; padding:1rem; border-radius:1rem; color:#b9f3ff; white-space:pre-wrap; font-family:monospace; font-size:0.8rem;">${escapeHtml(content)}</pre>
+            <p style="color:#aaa; margin-top:0.5rem; font-size:0.7rem;">Полный код можно посмотреть в инспекторе браузера (F12)</p>
+        </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('.close-modal').onclick = () => modal.remove();
+        modal.onclick = (e) => { if(e.target === modal) modal.remove(); };
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    document.querySelectorAll('.code-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-target');
+            if (target) showCode(target);
+        });
+    });
+</script>
+</body>
+</html>

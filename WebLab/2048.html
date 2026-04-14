@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🔢 2048 | Пиксельная головоломка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        :root {
+            --bg-gradient: radial-gradient(circle at 30% 10%, #0a0f2a, #030617);
+            --card-bg: rgba(20, 25, 55, 0.65);
+            --glass-border: 1px solid rgba(100, 150, 255, 0.25);
+            --accent: #6c8eff;
+            --text-light: #f0f3ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 1rem;
+            animation: floatParticle linear forwards;
+            opacity: 0.4;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .main-card {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: var(--glass-border);
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glow-title {
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #b2a5ff, #6c8eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 5px rgba(108, 142, 255, 0.3);}
+            100% { text-shadow: 0 0 25px rgba(155, 110, 255, 0.6);}
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .canvas-area {
+            text-align: center;
+        }
+        canvas {
+            background: #1a1c2c;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(108, 142, 255, 0.3);
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            min-width: 260px;
+            backdrop-filter: blur(4px);
+        }
+        .score-box {
+            background: #0a0c1a;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .score-box div {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #6c8eff;
+        }
+        .best-box {
+            background: #0a0c1a;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .volume-control {
+            margin: 1rem 0;
+        }
+        .volume-control label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            background: #1e1f36;
+            height: 4px;
+            border-radius: 5px;
+        }
+        button {
+            background: #2a2f4e;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: 0.2s;
+            width: 100%;
+        }
+        button:hover {
+            background: var(--accent);
+            transform: scale(0.98);
+        }
+        .records-table {
+            margin-top: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .records-table h4 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .records-table table {
+            width: 100%;
+            font-size: 0.8rem;
+            border-collapse: collapse;
+        }
+        .records-table th, .records-table td {
+            padding: 0.3rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nick-input {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.8rem 0;
+        }
+        .nick-input input {
+            flex: 1;
+            background: #1e1f36;
+            border: 1px solid #4f5b9e;
+            padding: 0.4rem;
+            border-radius: 1rem;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #6c8eff;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+        }
+        footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+        @media (max-width: 800px) {
+            .game-container { flex-direction: column; align-items: center; }
+            .info-panel { width: 100%; max-width: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h1 class="glow-title">🔢 2048 · ПИКСЕЛЬНАЯ ГОЛОВОЛОМКА</h1>
+    <div class="game-container">
+        <div class="canvas-area">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            <div style="margin-top: 0.8rem; font-size:0.8rem;">← ↑ ↓ → | свайпы | пауза: P</div>
+        </div>
+        <div class="info-panel">
+            <div class="score-box">
+                🎯 СЧЁТ: <span id="currentScore">0</span>
+            </div>
+            <div class="best-box">
+                🏆 ЛУЧШИЙ: <span id="bestScore">0</span>
+            </div>
+            <div class="volume-control">
+                <label>🔊 Громкость музыки: <span id="volumeValue">70%</span></label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+            </div>
+            <button id="resetBtn">🔄 Новая игра</button>
+            
+            <div class="nick-input">
+                <input type="text" id="playerNick" placeholder="Ваш ник" maxlength="15">
+                <button id="saveRecordBtn">💾 Сохранить рекорд</button>
+            </div>
+            
+            <div class="records-table">
+                <h4>🏆 ТАБЛИЦА РЕКОРДОВ 🏆</h4>
+                <div id="recordsList">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+    <a href="index.html" class="back-link">← Вернуться в лабораторию</a>
+    <footer>Музыка: 2048_music.mp3 | Рекорды в 2048_records.txt | ПИКСЕЛЬНАЯ ГРАФИКА</footer>
+</div>
+
+<script>
+    // ==================== ЧАСТИЦЫ ====================
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const icons = ['✨', '⭐', '🔢', '🎵', '🧩', '💎'];
+        particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.fontSize = (Math.random() * 20 + 12) + 'px';
+        particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 10000);
+    }
+    setInterval(createParticle, 800);
+    for (let i = 0; i < 15; i++) setTimeout(createParticle, i * 200);
+
+    // ==================== 2048 ====================
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    
+    const SIZE = 4;
+    const CELL_SIZE = 100;
+    let grid = [];
+    let score = 0;
+    let bestScore = 0;
+    let gameRunning = true;
+    
+    // Пиксельные цвета для плиток
+    const tileColors = {
+        0: '#1a1c2c',
+        2: '#2d2f4e',
+        4: '#3d3f6e',
+        8: '#5c5fd7',
+        16: '#4c7abf',
+        32: '#4c9fbf',
+        64: '#4cbfa5',
+        128: '#6cbf4c',
+        256: '#9fbf4c',
+        512: '#bfa54c',
+        1024: '#bf7a4c',
+        2048: '#bf4c4c',
+        4096: '#9f2d2d'
+    };
+    
+    function initGrid() {
+        grid = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
+        addRandomTile();
+        addRandomTile();
+        score = 0;
+        document.getElementById('currentScore').innerText = '0';
+        draw();
+    }
+    
+    function addRandomTile() {
+        const emptyCells = [];
+        for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+                if (grid[i][j] === 0) emptyCells.push({i, j});
+            }
+        }
+        if (emptyCells.length > 0) {
+            const {i, j} = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            grid[i][j] = Math.random() < 0.9 ? 2 : 4;
+        }
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, 400, 400);
+        
+        // Сетка
+        for (let i = 0; i <= SIZE; i++) {
+            ctx.fillStyle = '#2a2f4e';
+            ctx.fillRect(0, i * CELL_SIZE - 2, 400, 2);
+            ctx.fillRect(i * CELL_SIZE - 2, 0, 2, 400);
+        }
+        
+        // Плитки
+        for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+                const value = grid[i][j];
+                const color = tileColors[value] || tileColors[2048];
+                ctx.fillStyle = color;
+                ctx.fillRect(j * CELL_SIZE + 2, i * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                
+                if (value !== 0) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = `bold ${value >= 1000 ? 24 : 32}px monospace`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(value, j * CELL_SIZE + CELL_SIZE / 2, i * CELL_SIZE + CELL_SIZE / 2);
+                }
+            }
+        }
+        
+        // Пиксельная рамка
+        ctx.strokeStyle = '#6c8eff';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(2, 2, 396, 396);
+    }
+    
+    function move(direction) {
+        let moved = false;
+        let oldGrid = JSON.parse(JSON.stringify(grid));
+        
+        if (direction === 'left') {
+            for (let i = 0; i < SIZE; i++) {
+                let row = grid[i].filter(v => v !== 0);
+                for (let j = 0; j < row.length - 1; j++) {
+                    if (row[j] === row[j + 1]) {
+                        row[j] *= 2;
+                        score += row[j];
+                        row[j + 1] = 0;
+                        moved = true;
+                    }
+                }
+                row = row.filter(v => v !== 0);
+                while (row.length < SIZE) row.push(0);
+                if (JSON.stringify(grid[i]) !== JSON.stringify(row)) moved = true;
+                grid[i] = row;
+            }
+        }
+        else if (direction === 'right') {
+            for (let i = 0; i < SIZE; i++) {
+                let row = grid[i].filter(v => v !== 0);
+                for (let j = row.length - 1; j > 0; j--) {
+                    if (row[j] === row[j - 1]) {
+                        row[j] *= 2;
+                        score += row[j];
+                        row[j - 1] = 0;
+                        moved = true;
+                    }
+                }
+                row = row.filter(v => v !== 0);
+                while (row.length < SIZE) row.unshift(0);
+                if (JSON.stringify(grid[i]) !== JSON.stringify(row)) moved = true;
+                grid[i] = row;
+            }
+        }
+        else if (direction === 'up') {
+            for (let j = 0; j < SIZE; j++) {
+                let col = [];
+                for (let i = 0; i < SIZE; i++) if (grid[i][j] !== 0) col.push(grid[i][j]);
+                for (let i = 0; i < col.length - 1; i++) {
+                    if (col[i] === col[i + 1]) {
+                        col[i] *= 2;
+                        score += col[i];
+                        col[i + 1] = 0;
+                        moved = true;
+                    }
+                }
+                col = col.filter(v => v !== 0);
+                while (col.length < SIZE) col.push(0);
+                for (let i = 0; i < SIZE; i++) {
+                    if (grid[i][j] !== col[i]) moved = true;
+                    grid[i][j] = col[i];
+                }
+            }
+        }
+        else if (direction === 'down') {
+            for (let j = 0; j < SIZE; j++) {
+                let col = [];
+                for (let i = SIZE - 1; i >= 0; i--) if (grid[i][j] !== 0) col.push(grid[i][j]);
+                for (let i = 0; i < col.length - 1; i++) {
+                    if (col[i] === col[i + 1]) {
+                        col[i] *= 2;
+                        score += col[i];
+                        col[i + 1] = 0;
+                        moved = true;
+                    }
+                }
+                col = col.filter(v => v !== 0);
+                while (col.length < SIZE) col.push(0);
+                for (let i = 0; i < SIZE; i++) {
+                    if (grid[SIZE - 1 - i][j] !== col[i]) moved = true;
+                    grid[SIZE - 1 - i][j] = col[i];
+                }
+            }
+        }
+        
+        if (moved) {
+            addRandomTile();
+            document.getElementById('currentScore').innerText = score;
+            if (score > bestScore) {
+                bestScore = score;
+                document.getElementById('bestScore').innerText = bestScore;
+                localStorage.setItem('2048_best', bestScore);
+            }
+            draw();
+            if (checkGameOver()) {
+                gameOver();
+            }
+            if (checkWin()) {
+                alert('🎉 ПОЗДРАВЛЯЮ! Вы достигли 2048! 🎉');
+            }
+        }
+    }
+    
+    function checkGameOver() {
+        for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+                if (grid[i][j] === 0) return false;
+                if (j < SIZE - 1 && grid[i][j] === grid[i][j + 1]) return false;
+                if (i < SIZE - 1 && grid[i][j] === grid[i + 1][j]) return false;
+            }
+        }
+        return true;
+    }
+    
+    function checkWin() {
+        for (let i = 0; i < SIZE; i++) {
+            for (let j = 0; j < SIZE; j++) {
+                if (grid[i][j] === 2048) return true;
+            }
+        }
+        return false;
+    }
+    
+    function gameOver() {
+        gameRunning = false;
+        const finalScore = score;
+        alert(`💀 ИГРА ОКОНЧЕНА!\n🏆 Ваш счёт: ${finalScore}\n🏅 Лучший: ${bestScore}`);
+        
+        if (isHighScore(finalScore) && finalScore > 0) {
+            const nick = prompt(`✨ ПОЗДРАВЛЯЮ! НОВЫЙ РЕКОРД!\nВведите ваш ник:`, '2048Мастер');
+            if (nick && nick.trim()) addRecord(nick.trim(), finalScore);
+            else if (finalScore > 0) addRecord('ПиксельныйГений', finalScore);
+        }
+        initGrid();
+        gameRunning = true;
+        draw();
+    }
+    
+    function resetGame() {
+        initGrid();
+        score = 0;
+        document.getElementById('currentScore').innerText = '0';
+        gameRunning = true;
+        draw();
+    }
+    
+    // ========== РЕКОРДЫ ==========
+    let records = [];
+    
+    function loadRecords() {
+        const stored = localStorage.getItem('2048_records');
+        if (stored) records = JSON.parse(stored);
+        else records = [
+            { nick: 'Мастер2048', score: 2048 },
+            { nick: 'Числолюб', score: 1024 },
+            { nick: 'Новичок', score: 512 }
+        ];
+        records.sort((a,b) => b.score - a.score);
+        renderRecords();
+        
+        const savedBest = localStorage.getItem('2048_best');
+        if (savedBest) bestScore = parseInt(savedBest);
+        document.getElementById('bestScore').innerText = bestScore;
+    }
+    
+    function renderRecords() {
+        const recordsDiv = document.getElementById('recordsList');
+        if (records.length === 0) { recordsDiv.innerHTML = '<p>Нет рекордов</p>'; return; }
+        let html = '§碜<thead><tr><th>#</th><th>Ник</th><th>Счёт</th></tr></thead><tbody>';
+        records.slice(0, 10).forEach((rec, idx) => {
+            html += `<tr><td>${idx+1}</td><td>${escapeHtml(rec.nick)}</td><td>${rec.score}</td></tr>`;
+        });
+        html += '</tbody></table>';
+        recordsDiv.innerHTML = '<table>' + html + '</table>';
+    }
+    
+    function saveRecordsToLocal() { localStorage.setItem('2048_records', JSON.stringify(records)); renderRecords(); }
+    function addRecord(nick, scoreValue) { if (!nick || nick.trim() === '') nick = 'Аноним'; nick = nick.trim().substring(0, 15); records.push({ nick, score: scoreValue }); records.sort((a,b) => b.score - a.score); if (records.length > 20) records = records.slice(0, 20); saveRecordsToLocal(); }
+    function isHighScore(scoreValue) { return records.length < 10 || scoreValue > records[records.length-1].score; }
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function exportRecordsToTxt() { let content = "2048 - РЕКОРДЫ\nНик\tСчёт\n"; records.forEach(r => content += `${r.nick}\t${r.score}\n`); const blob = new Blob([content], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = '2048_records.txt'; a.click(); URL.revokeObjectURL(a.href); }
+    
+    // ========== МУЗЫКА ==========
+    const music = new Audio('2048_music.mp3');
+    music.loop = true;
+    music.volume = 0.7;
+    let musicStarted = false;
+    function startMusic() { if (!musicStarted) { music.play().catch(e => console.log('Музыка:')); musicStarted = true; } }
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('keydown', startMusic, { once: true });
+    
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValueSpan = document.getElementById('volumeValue');
+    volumeSlider.oninput = () => { music.volume = volumeSlider.value; volumeValueSpan.innerText = Math.round(volumeSlider.value * 100) + '%'; };
+    
+    // ========== УПРАВЛЕНИЕ ==========
+    window.addEventListener('keydown', (e) => {
+        if (!gameRunning) return;
+        if (e.key === 'ArrowLeft') { move('left'); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { move('right'); e.preventDefault(); }
+        else if (e.key === 'ArrowUp') { move('up'); e.preventDefault(); }
+        else if (e.key === 'ArrowDown') { move('down'); e.preventDefault(); }
+        else if (e.shiftKey && e.key === 'R') { exportRecordsToTxt(); alert('Рекорды экспортированы'); }
+    });
+    
+    // Свайпы для мобильных
+    let touchStart = null;
+    canvas.addEventListener('touchstart', (e) => {
+        touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        e.preventDefault();
+    });
+    canvas.addEventListener('touchend', (e) => {
+        if (!touchStart) return;
+        const dx = e.changedTouches[0].clientX - touchStart.x;
+        const dy = e.changedTouches[0].clientY - touchStart.y;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 20) {
+            if (dx > 0) move('right');
+            else move('left');
+        } else if (Math.abs(dy) > 20) {
+            if (dy > 0) move('down');
+            else move('up');
+        }
+        touchStart = null;
+        e.preventDefault();
+    });
+    
+    // ========== UI ==========
+    const resetBtn = document.getElementById('resetBtn');
+    const saveRecordBtn = document.getElementById('saveRecordBtn');
+    const playerNickInput = document.getElementById('playerNick');
+    
+    resetBtn.onclick = () => resetGame();
+    saveRecordBtn.onclick = () => { let nick = playerNickInput.value.trim(); if (nick === '') nick = 'Аноним'; if (score > 0) { addRecord(nick, score); playerNickInput.value = ''; alert(`🏆 Рекорд ${score} сохранён!`); } else alert('Сыграйте, чтобы сохранить рекорд'); };
+    
+    // ========== ЗАПУСК ==========
+    function init() {
+        loadRecords();
+        initGrid();
+        draw();
+    }
+    
+    init();
+</script>
+</body>
+</html>

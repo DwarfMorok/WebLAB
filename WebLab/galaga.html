@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>👾 КОСМИЧЕСКИЙ ЗАЩИТНИК | Пиксельная аркада</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        :root {
+            --bg-gradient: radial-gradient(circle at 30% 10%, #0a0f2a, #030617);
+            --card-bg: rgba(20, 25, 55, 0.65);
+            --glass-border: 1px solid rgba(100, 150, 255, 0.25);
+            --accent: #6c8eff;
+            --text-light: #f0f3ff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            font-size: 1rem;
+            animation: floatParticle linear forwards;
+            opacity: 0.4;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .main-card {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: var(--glass-border);
+            padding: 1.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glow-title {
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #b2a5ff, #6c8eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 5px rgba(108, 142, 255, 0.3);}
+            100% { text-shadow: 0 0 25px rgba(155, 110, 255, 0.6);}
+        }
+
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .canvas-area {
+            text-align: center;
+        }
+        canvas {
+            background: #05070f;
+            border-radius: 1rem;
+            box-shadow: 0 0 20px rgba(108, 142, 255, 0.3);
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: pixelated;
+            cursor: none;
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            min-width: 260px;
+            backdrop-filter: blur(4px);
+        }
+        .score-box {
+            background: #0a0c1a;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .score-box div {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #6c8eff;
+        }
+        .lives-box {
+            background: #0a0c1a;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .speed-control, .volume-control {
+            margin: 1rem 0;
+        }
+        .speed-control label, .volume-control label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            background: #1e1f36;
+            height: 4px;
+            border-radius: 5px;
+        }
+        button {
+            background: #2a2f4e;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: 0.2s;
+            width: 100%;
+        }
+        button:hover {
+            background: var(--accent);
+            transform: scale(0.98);
+        }
+        .records-table {
+            margin-top: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 1rem;
+            padding: 0.5rem;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .records-table h4 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .records-table table {
+            width: 100%;
+            font-size: 0.8rem;
+            border-collapse: collapse;
+        }
+        .records-table th, .records-table td {
+            padding: 0.3rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .nick-input {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.8rem 0;
+        }
+        .nick-input input {
+            flex: 1;
+            background: #1e1f36;
+            border: 1px solid #4f5b9e;
+            padding: 0.4rem;
+            border-radius: 1rem;
+            color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #6c8eff;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+        }
+        footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+        @media (max-width: 800px) {
+            .game-container { flex-direction: column; align-items: center; }
+            .info-panel { width: 100%; max-width: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h1 class="glow-title">👾 КОСМИЧЕСКИЙ ЗАЩИТНИК</h1>
+    <div class="game-container">
+        <div class="canvas-area">
+            <canvas id="spaceCanvas" width="600" height="500"></canvas>
+            <div style="margin-top: 0.8rem; font-size:0.8rem;">← → движение | пробел — стрельба | мышь тоже работает</div>
+        </div>
+        <div class="info-panel">
+            <div class="score-box">
+                🎯 СЧЁТ: <span id="currentScore">0</span>
+            </div>
+            <div class="lives-box">
+                💙 ЖИЗНИ: <span id="livesCount">3</span>
+            </div>
+            <div class="speed-control">
+                <label>⚡ Скорость врагов: <span id="speedValue">2</span></label>
+                <input type="range" id="speedSlider" min="1" max="6" step="0.2" value="2">
+            </div>
+            <div class="volume-control">
+                <label>🔊 Громкость музыки: <span id="volumeValue">70%</span></label>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+            </div>
+            <button id="pauseBtn">⏸️ Пауза</button>
+            <button id="resetBtn">🔄 Новая игра</button>
+            
+            <div class="nick-input">
+                <input type="text" id="playerNick" placeholder="Ваш ник" maxlength="15">
+                <button id="saveRecordBtn">💾 Сохранить рекорд</button>
+            </div>
+            
+            <div class="records-table">
+                <h4>🏆 ТАБЛИЦА РЕКОРДОВ 🏆</h4>
+                <div id="recordsList">Загрузка...</div>
+            </div>
+        </div>
+    </div>
+    <a href="index.html" class="back-link">← Вернуться в лабораторию</a>
+    <footer>Музыка: space_shooter_music.mp3 | Рекорды в space_records.txt | ПИКСЕЛЬНАЯ ГРАФИКА</footer>
+</div>
+
+<script>
+    // ==================== ЧАСТИЦЫ ====================
+    function createParticle() {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        const icons = ['✨', '⭐', '💫', '👾', '🎵', '🚀', '🔫'];
+        particle.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.fontSize = (Math.random() * 20 + 12) + 'px';
+        particle.style.animationDuration = (Math.random() * 6 + 5) + 's';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 10000);
+    }
+    setInterval(createParticle, 800);
+    for (let i = 0; i < 15; i++) setTimeout(createParticle, i * 200);
+
+    // ==================== ПИКСЕЛЬНАЯ КОСМИЧЕСКАЯ АРКАДА ====================
+    const canvas = document.getElementById('spaceCanvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+    
+    const CW = 600;
+    const CH = 500;
+    
+    // Корабль (пиксельный)
+    let ship = {
+        x: CW / 2 - 16,
+        y: CH - 48,
+        width: 32,
+        height: 28
+    };
+    
+    let lives = 3;
+    let score = 0;
+    let gameRunning = true;
+    let isPaused = false;
+    let animationId = null;
+    let enemySpeed = 2;
+    let enemyMoveCounter = 0;
+    let enemyDirection = 1;
+    
+    // Пули (пиксельные)
+    let bullets = [];
+    const BULLET_SPEED = -5;
+    let shootCooldown = 0;
+    const SHOOT_DELAY = 10;
+    
+    // Враги (пиксельные спрайты)
+    let enemies = [];
+    const ENEMY_ROWS = 4;
+    const ENEMY_COLS = 8;
+    const ENEMY_WIDTH = 36;
+    const ENEMY_HEIGHT = 28;
+    const ENEMY_SPACING = 8;
+    const ENEMY_START_X = 30;
+    const ENEMY_START_Y = 45;
+    
+    // Вражеские пули
+    let enemyBullets = [];
+    const ENEMY_BULLET_SPEED = 3.5;
+    let enemyShootTimer = 0;
+    
+    // Пиксельные взрывы
+    let explosions = [];
+    
+    // Пиксельные звёзды
+    let stars = [];
+    for (let i = 0; i < 150; i++) {
+        stars.push({ x: Math.random() * CW, y: Math.random() * CH, size: Math.random() > 0.7 ? 2 : 1 });
+    }
+    
+    // ========== ПИКСЕЛЬНАЯ ОТРИСОВКА ==========
+    function drawPixelShip() {
+        // Основной корпус
+        ctx.fillStyle = '#5c7cfa';
+        ctx.fillRect(ship.x + 12, ship.y, 8, 8);
+        ctx.fillRect(ship.x + 8, ship.y + 8, 16, 6);
+        ctx.fillRect(ship.x + 4, ship.y + 14, 24, 8);
+        ctx.fillRect(ship.x, ship.y + 22, 32, 6);
+        
+        // Крылья
+        ctx.fillStyle = '#3b5bdb';
+        ctx.fillRect(ship.x, ship.y + 16, 4, 6);
+        ctx.fillRect(ship.x + 28, ship.y + 16, 4, 6);
+        
+        // Кабина
+        ctx.fillStyle = '#a5d8ff';
+        ctx.fillRect(ship.x + 14, ship.y - 2, 4, 4);
+        ctx.fillRect(ship.x + 13, ship.y + 2, 6, 4);
+        
+        // Двигатели
+        ctx.fillStyle = '#ff922b';
+        ctx.fillRect(ship.x + 6, ship.y + 24, 5, 4);
+        ctx.fillRect(ship.x + 21, ship.y + 24, 5, 4);
+        
+        // Огонь из двигателей (мерцающий)
+        if (Math.floor(Date.now() / 100) % 2 === 0) {
+            ctx.fillStyle = '#ffc078';
+            ctx.fillRect(ship.x + 7, ship.y + 28, 3, 3);
+            ctx.fillRect(ship.x + 22, ship.y + 28, 3, 3);
+        }
+    }
+    
+    function drawPixelEnemy(e) {
+        // Разные типы врагов с пиксельной графикой
+        if (e.type === 0) { // Малый пришелец
+            ctx.fillStyle = '#e8596e';
+            ctx.fillRect(e.x + 6, e.y, 8, 6);
+            ctx.fillRect(e.x + 2, e.y + 6, 16, 6);
+            ctx.fillRect(e.x, e.y + 12, 20, 8);
+            ctx.fillStyle = '#ffa8b8';
+            ctx.fillRect(e.x + 8, e.y + 2, 4, 4);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(e.x + 10, e.y + 8, 2, 2);
+            ctx.fillRect(e.x + 6, e.y + 8, 2, 2);
+        } else if (e.type === 1) { // Круглый пришелец
+            ctx.fillStyle = '#f0a45a';
+            ctx.fillRect(e.x + 4, e.y, 12, 6);
+            ctx.fillRect(e.x, e.y + 6, 20, 8);
+            ctx.fillRect(e.x + 2, e.y + 14, 16, 6);
+            ctx.fillStyle = '#ffd8a8';
+            ctx.fillRect(e.x + 8, e.y + 2, 4, 4);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(e.x + 9, e.y + 9, 2, 2);
+            ctx.fillRect(e.x + 5, e.y + 9, 2, 2);
+        } else if (e.type === 2) { // НЛО
+            ctx.fillStyle = '#69db7e';
+            ctx.fillRect(e.x + 2, e.y + 4, 16, 4);
+            ctx.fillRect(e.x, e.y + 8, 20, 6);
+            ctx.fillRect(e.x + 4, e.y + 14, 12, 6);
+            ctx.fillStyle = '#b2f2bb';
+            ctx.fillRect(e.x + 6, e.y + 6, 8, 2);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(e.x + 8, e.y + 10, 4, 2);
+        } else { // Скелет-пришелец
+            ctx.fillStyle = '#be4bdb';
+            ctx.fillRect(e.x + 4, e.y + 2, 12, 4);
+            ctx.fillRect(e.x, e.y + 6, 20, 8);
+            ctx.fillRect(e.x + 6, e.y + 14, 8, 6);
+            ctx.fillStyle = '#eebefa';
+            ctx.fillRect(e.x + 8, e.y + 4, 4, 4);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(e.x + 9, e.y + 9, 2, 2);
+        }
+        
+        // Очки за врага
+        ctx.fillStyle = '#ffd43b';
+        ctx.font = 'bold 10px monospace';
+        ctx.fillText(e.points, e.x + 6, e.y - 3);
+    }
+    
+    function drawPixelBullet(x, y, isEnemy) {
+        if (isEnemy) {
+            ctx.fillStyle = '#ff6b6b';
+            ctx.fillRect(x, y, 4, 8);
+            ctx.fillStyle = '#ffa8a8';
+            ctx.fillRect(x + 1, y + 2, 2, 4);
+        } else {
+            ctx.fillStyle = '#ffd43b';
+            ctx.fillRect(x, y, 3, 8);
+            ctx.fillStyle = '#fff3bf';
+            ctx.fillRect(x + 1, y + 2, 1, 5);
+        }
+    }
+    
+    function drawPixelExplosion(x, y, life) {
+        const size = Math.floor(8 * life);
+        ctx.fillStyle = `rgba(255, 100, 50, ${life * 0.8})`;
+        ctx.fillRect(x - size/2, y - size/2, size, size);
+        ctx.fillStyle = `rgba(255, 200, 50, ${life * 0.9})`;
+        ctx.fillRect(x - size/4, y - size/4, size/2, size/2);
+    }
+    
+    function drawStars() {
+        stars.forEach(star => {
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.3})`;
+            ctx.fillRect(star.x, star.y, star.size, star.size);
+        });
+    }
+    
+    function draw() {
+        ctx.clearRect(0, 0, CW, CH);
+        
+        // Тёмный фон
+        ctx.fillStyle = '#05070f';
+        ctx.fillRect(0, 0, CW, CH);
+        
+        // Пиксельные звёзды
+        drawStars();
+        
+        // Корабль
+        drawPixelShip();
+        
+        // Пули игрока
+        bullets.forEach(b => drawPixelBullet(b.x, b.y, false));
+        
+        // Враги
+        enemies.forEach(e => { if (e.alive) drawPixelEnemy(e); });
+        
+        // Вражеские пули
+        enemyBullets.forEach(b => drawPixelBullet(b.x, b.y, true));
+        
+        // Взрывы
+        explosions.forEach((exp, idx) => {
+            drawPixelExplosion(exp.x, exp.y, exp.life);
+            exp.life -= 0.05;
+            if (exp.life <= 0) explosions.splice(idx, 1);
+        });
+        
+        // Очки жизни (пиксельный шрифт)
+        ctx.font = 'bold 14px monospace';
+        ctx.fillStyle = '#ff6b6b';
+        for (let i = 0; i < lives; i++) {
+            ctx.fillText('❤️', 15 + i * 25, 30);
+        }
+        ctx.fillStyle = '#ffd43b';
+        ctx.fillText(`SCORE ${score}`, CW - 110, 30);
+    }
+    
+    // ========== ИГРОВАЯ ЛОГИКА ==========
+    function initEnemies() {
+        enemies = [];
+        for (let row = 0; row < ENEMY_ROWS; row++) {
+            for (let col = 0; col < ENEMY_COLS; col++) {
+                enemies.push({
+                    x: ENEMY_START_X + col * (ENEMY_WIDTH + ENEMY_SPACING),
+                    y: ENEMY_START_Y + row * (ENEMY_HEIGHT + ENEMY_SPACING),
+                    width: ENEMY_WIDTH,
+                    height: ENEMY_HEIGHT,
+                    type: row % 4,
+                    points: [10, 20, 30, 40][row % 4],
+                    alive: true
+                });
+            }
+        }
+    }
+    
+    function updateGame() {
+        if (!gameRunning || isPaused) return;
+        
+        // Движение врагов (армия)
+        enemyMoveCounter++;
+        if (enemyMoveCounter >= Math.floor(28 / enemySpeed)) {
+            enemyMoveCounter = 0;
+            let edgeReached = false;
+            enemies.forEach(e => {
+                if (e.alive) {
+                    e.x += enemyDirection * 7;
+                    if (e.x <= 10 || e.x + ENEMY_WIDTH >= CW - 10) edgeReached = true;
+                }
+            });
+            if (edgeReached) {
+                enemyDirection *= -1;
+                enemies.forEach(e => {
+                    if (e.alive) e.y += 10;
+                });
+            }
+        }
+        
+        // Столкновение врагов с кораблём
+        for (let i = 0; i < enemies.length; i++) {
+            const e = enemies[i];
+            if (!e.alive) continue;
+            if (ship.x < e.x + ENEMY_WIDTH && ship.x + ship.width > e.x &&
+                ship.y < e.y + ENEMY_HEIGHT && ship.y + 28 > e.y) {
+                e.alive = false;
+                explosions.push({ x: ship.x + 16, y: ship.y + 14, life: 1 });
+                lives--;
+                document.getElementById('livesCount').innerText = lives;
+                if (lives <= 0) gameOver();
+                ship.x = CW / 2 - 16;
+            }
+            // Враги у нижней границы
+            if (e.y + ENEMY_HEIGHT >= CH - 50) gameOver();
+        }
+        
+        // Пули игрока
+        for (let i = 0; i < bullets.length; i++) {
+            bullets[i].y += BULLET_SPEED;
+            if (bullets[i].y < 0) { bullets.splice(i, 1); continue; }
+            let hit = false;
+            for (let j = 0; j < enemies.length; j++) {
+                const e = enemies[j];
+                if (!e.alive) continue;
+                if (bullets[i].x > e.x && bullets[i].x < e.x + ENEMY_WIDTH &&
+                    bullets[i].y > e.y && bullets[i].y < e.y + ENEMY_HEIGHT) {
+                    e.alive = false;
+                    hit = true;
+                    score += e.points;
+                    document.getElementById('currentScore').innerText = score;
+                    explosions.push({ x: bullets[i].x, y: bullets[i].y, life: 0.9 });
+                    break;
+                }
+            }
+            if (hit) bullets.splice(i, 1);
+        }
+        
+        // Стрельба врагов
+        if (enemyShootTimer <= 0) {
+            const aliveEnemies = enemies.filter(e => e.alive);
+            if (aliveEnemies.length > 0) {
+                const randomEnemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+                enemyBullets.push({
+                    x: randomEnemy.x + ENEMY_WIDTH / 2 - 2,
+                    y: randomEnemy.y + ENEMY_HEIGHT,
+                });
+            }
+            enemyShootTimer = Math.floor(45 / enemySpeed) + 15;
+        } else {
+            enemyShootTimer--;
+        }
+        
+        // Движение вражеских пуль
+        for (let i = 0; i < enemyBullets.length; i++) {
+            enemyBullets[i].y += ENEMY_BULLET_SPEED;
+            if (enemyBullets[i].y > CH) { enemyBullets.splice(i, 1); continue; }
+            if (enemyBullets[i].x > ship.x && enemyBullets[i].x < ship.x + ship.width &&
+                enemyBullets[i].y > ship.y && enemyBullets[i].y < ship.y + 28) {
+                enemyBullets.splice(i, 1);
+                lives--;
+                document.getElementById('livesCount').innerText = lives;
+                explosions.push({ x: ship.x + 16, y: ship.y + 14, life: 1 });
+                if (lives <= 0) gameOver();
+                ship.x = CW / 2 - 16;
+            }
+        }
+        
+        // Кулдаун стрельбы
+        if (shootCooldown > 0) shootCooldown--;
+        
+        // Проверка победы
+        const aliveCount = enemies.filter(e => e.alive).length;
+        if (aliveCount === 0) levelUp();
+        
+        draw();
+    }
+    
+    function shoot() {
+        if (!gameRunning || isPaused) return;
+        if (shootCooldown === 0) {
+            bullets.push({ x: ship.x + ship.width / 2 - 2, y: ship.y - 4 });
+            shootCooldown = SHOOT_DELAY;
+        }
+    }
+    
+    function levelUp() {
+        enemySpeed = Math.min(enemySpeed + 0.25, 5.5);
+        document.getElementById('speedValue').innerText = enemySpeed.toFixed(1);
+        speedSlider.value = enemySpeed;
+        initEnemies();
+        enemyDirection = 1;
+        enemyMoveCounter = 0;
+        score += 500;
+        document.getElementById('currentScore').innerText = score;
+        explosions.push({ x: CW / 2, y: CH / 2, life: 1.2 });
+    }
+    
+    function gameOver() {
+        gameRunning = false;
+        if (animationId) cancelAnimationFrame(animationId);
+        const finalScore = score;
+        alert(`💀 ИГРА ОКОНЧЕНА!\n🏆 Ваш счёт: ${finalScore}`);
+        
+        if (isHighScore(finalScore) && finalScore > 0) {
+            const nick = prompt(`✨ ПОЗДРАВЛЯЮ! ВЫ В ТАБЛИЦЕ РЕКОРДОВ!\nВведите ваш ник:`, 'ПиксельныйАс');
+            if (nick && nick.trim()) addRecord(nick.trim(), finalScore);
+            else if (finalScore > 0) addRecord('ГеройГалактики', finalScore);
+        } else if (finalScore > 0) {
+            alert(`Рекорд не побит. Попробуйте ещё раз!`);
+        }
+        resetGame();
+    }
+    
+    function resetGame() {
+        gameRunning = true;
+        isPaused = false;
+        pauseBtn.textContent = '⏸️ Пауза';
+        lives = 3;
+        score = 0;
+        enemySpeed = 2;
+        enemyDirection = 1;
+        enemyMoveCounter = 0;
+        bullets = [];
+        enemyBullets = [];
+        explosions = [];
+        shootCooldown = 0;
+        document.getElementById('currentScore').innerText = '0';
+        document.getElementById('livesCount').innerText = '3';
+        document.getElementById('speedValue').innerText = '2';
+        speedSlider.value = 2;
+        ship.x = CW / 2 - 16;
+        initEnemies();
+        draw();
+        startGameLoop();
+    }
+    
+    // ========== УПРАВЛЕНИЕ ==========
+    function moveShip(clientX) {
+        if (!gameRunning || isPaused) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        let mouseX = (clientX - rect.left) * scaleX;
+        mouseX = Math.min(Math.max(mouseX, 0), CW - ship.width);
+        ship.x = mouseX;
+    }
+    
+    canvas.addEventListener('mousemove', (e) => moveShip(e.clientX));
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveShip(e.touches[0].clientX); });
+    canvas.addEventListener('click', () => shoot());
+    
+    let leftPressed = false, rightPressed = false;
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { leftPressed = true; e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { rightPressed = true; e.preventDefault(); }
+        else if (e.key === ' ' || e.key === 'Space') { shoot(); e.preventDefault(); }
+        else if (e.key === 'p' || e.key === 'P') { pauseBtn.click(); e.preventDefault(); }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (e.key === 'ArrowLeft') leftPressed = false;
+        else if (e.key === 'ArrowRight') rightPressed = false;
+    });
+    
+    function handleKeyboardMove() {
+        if (!gameRunning || isPaused) return;
+        if (leftPressed) ship.x = Math.max(0, ship.x - 6);
+        if (rightPressed) ship.x = Math.min(CW - ship.width, ship.x + 6);
+    }
+    
+    // ========== РЕКОРДЫ ==========
+    let records = [];
+    
+    function loadRecords() {
+        const stored = localStorage.getItem('space_records');
+        if (stored) records = JSON.parse(stored);
+        else records = [{ nick: 'ПиксельныйЛорд', score: 2450 }, { nick: 'ЗвёздныйПатруль', score: 1780 }, { nick: 'Космодесант', score: 1120 }];
+        records.sort((a,b) => b.score - a.score);
+        renderRecords();
+    }
+    
+    function renderRecords() {
+        const recordsDiv = document.getElementById('recordsList');
+        if (records.length === 0) { recordsDiv.innerHTML = '<p>Нет рекордов</p>'; return; }
+        let html = '<table><th>#</th><th>Ник</th><th>Счёт</th></tr>';
+        records.slice(0, 10).forEach((rec, idx) => { html += `<tr><td>${idx+1}</td><td>${escapeHtml(rec.nick)}</td><td>${rec.score}</td></tr>`; });
+        recordsDiv.innerHTML = '<table>' + html + '</table>';
+    }
+    
+    function saveRecordsToLocal() { localStorage.setItem('space_records', JSON.stringify(records)); renderRecords(); }
+    function addRecord(nick, scoreValue) { if (!nick || nick.trim() === '') nick = 'Аноним'; nick = nick.trim().substring(0, 15); records.push({ nick, score: scoreValue }); records.sort((a,b) => b.score - a.score); if (records.length > 20) records = records.slice(0, 20); saveRecordsToLocal(); }
+    function isHighScore(scoreValue) { return records.length < 10 || scoreValue > records[records.length-1].score; }
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function exportRecordsToTxt() { let content = "КОСМИЧЕСКИЙ ЗАЩИТНИК - РЕКОРДЫ\nНик\tСчёт\n"; records.forEach(r => content += `${r.nick}\t${r.score}\n`); const blob = new Blob([content], {type: 'text/plain'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'space_records.txt'; a.click(); URL.revokeObjectURL(a.href); }
+    
+    // ========== МУЗЫКА ==========
+    const music = new Audio('galaga_music.mp3');
+    music.loop = true;
+    music.volume = 0.7;
+    let musicStarted = false;
+    function startMusic() { if (!musicStarted) { music.play().catch(e => console.log('Музыка:')); musicStarted = true; } }
+    document.body.addEventListener('click', startMusic, { once: true });
+    document.body.addEventListener('keydown', startMusic, { once: true });
+    
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValueSpan = document.getElementById('volumeValue');
+    volumeSlider.oninput = () => { music.volume = volumeSlider.value; volumeValueSpan.innerText = Math.round(volumeSlider.value * 100) + '%'; };
+    
+    // ========== UI ==========
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValueSpan = document.getElementById('speedValue');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const saveRecordBtn = document.getElementById('saveRecordBtn');
+    const playerNickInput = document.getElementById('playerNick');
+    
+    speedSlider.addEventListener('input', () => { enemySpeed = parseFloat(speedSlider.value); speedValueSpan.innerText = enemySpeed.toFixed(1); });
+    pauseBtn.onclick = () => { if (!gameRunning) return; isPaused = !isPaused; pauseBtn.textContent = isPaused ? '▶️ Старт' : '⏸️ Пауза'; draw(); if (!isPaused) startGameLoop(); };
+    resetBtn.onclick = () => resetGame();
+    saveRecordBtn.onclick = () => { let nick = playerNickInput.value.trim(); if (nick === '') nick = 'Аноним'; if (score > 0) { addRecord(nick, score); playerNickInput.value = ''; alert(`🏆 Рекорд ${score} сохранён!`); } else alert('Сыграйте, чтобы сохранить рекорд'); };
+    window.addEventListener('keydown', (e) => { if (e.shiftKey && e.key === 'R') { exportRecordsToTxt(); alert('Рекорды экспортированы'); } });
+    
+    function gameLoop() { handleKeyboardMove(); updateGame(); animationId = requestAnimationFrame(gameLoop); }
+    function startGameLoop() { if (animationId) cancelAnimationFrame(animationId); animationId = requestAnimationFrame(gameLoop); }
+    function init() { loadRecords(); initEnemies(); draw(); startGameLoop(); }
+    init();
+</script>
+</body>
+</html>
