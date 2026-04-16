@@ -1,0 +1,8 @@
+[
+    { "id": 1, "login": "admin", "password": "12345", "fullName": "Сергин Николай Владимирович", "roleId": 1, "roleName": "Администратор системы", "phone": "+7-999-123-4567", "isActive": true },
+    { "id": 2, "login": "manager", "password": "12345", "fullName": "Петрова Анна Сергеевна", "roleId": 2, "roleName": "Управляющий", "phone": "+7-999-234-5678", "isActive": true },
+    { "id": 3, "login": "reception1", "password": "12345", "fullName": "Иванова Мария Петровна", "roleId": 3, "roleName": "Ресепшн", "phone": "+7-999-345-6789", "isActive": true },
+    { "id": 4, "login": "reception2", "password": "12345", "fullName": "Сидоров Алексей Дмитриевич", "roleId": 3, "roleName": "Ресепшн", "phone": "+7-999-456-7890", "isActive": true },
+    { "id": 5, "login": "housekeep1", "password": "12345", "fullName": "Зайцева Елена Викторовна", "roleId": 4, "roleName": "Обслуживающий персонал", "phone": "+7-999-567-8901", "isActive": true },
+    { "id": 6, "login": "housekeep2", "password": "12345", "fullName": "Кузнецов Дмитрий Игоревич", "roleId": 4, "roleName": "Обслуживающий персонал", "phone": "+7-999-678-9012", "isActive": true }
+]

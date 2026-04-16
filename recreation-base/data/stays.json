@@ -1,0 +1,17 @@
+[
+    { "id": 1, "guestId": 1, "roomId": 6, "bookingId": null, "actualCheckIn": "2025-12-20T14:00:00", "actualCheckOut": "2025-12-25T12:00:00", "totalCost": 20000, "checkedInBy": "reception1", "checkedOutBy": "reception1" },
+    { "id": 2, "guestId": 2, "roomId": 12, "bookingId": null, "actualCheckIn": "2026-01-10T15:30:00", "actualCheckOut": "2026-01-15T11:00:00", "totalCost": 30000, "checkedInBy": "reception2", "checkedOutBy": "reception2" },
+    { "id": 3, "guestId": 3, "roomId": 1, "bookingId": null, "actualCheckIn": "2026-02-05T12:00:00", "actualCheckOut": "2026-02-08T12:00:00", "totalCost": 7500, "checkedInBy": "reception1", "checkedOutBy": "reception1" },
+    { "id": 4, "guestId": 4, "roomId": 5, "bookingId": 1, "actualCheckIn": "2026-07-10T14:00:00", "actualCheckOut": "2026-07-15T12:00:00", "totalCost": 20000, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 5, "guestId": 5, "roomId": 9, "bookingId": 5, "actualCheckIn": "2026-07-18T15:00:00", "actualCheckOut": null, "totalCost": 15000, "checkedInBy": "reception2", "checkedOutBy": null },
+    { "id": 6, "guestId": 6, "roomId": 7, "bookingId": 6, "actualCheckIn": "2026-07-25T16:00:00", "actualCheckOut": null, "totalCost": 22500, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 7, "guestId": 7, "roomId": 10, "bookingId": 7, "actualCheckIn": "2026-08-01T14:30:00", "actualCheckOut": null, "totalCost": 34000, "checkedInBy": "reception2", "checkedOutBy": null },
+    { "id": 8, "guestId": 9, "roomId": 2, "bookingId": 9, "actualCheckIn": "2026-08-05T13:00:00", "actualCheckOut": null, "totalCost": 12500, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 9, "guestId": 10, "roomId": 13, "bookingId": 10, "actualCheckIn": "2026-08-07T15:00:00", "actualCheckOut": null, "totalCost": 30000, "checkedInBy": "reception2", "checkedOutBy": null },
+    { "id": 10, "guestId": 11, "roomId": 15, "bookingId": 11, "actualCheckIn": "2026-08-10T12:00:00", "actualCheckOut": null, "totalCost": 25000, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 11, "guestId": 13, "roomId": 18, "bookingId": 13, "actualCheckIn": "2026-08-15T14:00:00", "actualCheckOut": null, "totalCost": 75000, "checkedInBy": "reception2", "checkedOutBy": null },
+    { "id": 12, "guestId": 15, "roomId": 16, "bookingId": 15, "actualCheckIn": "2026-08-20T16:00:00", "actualCheckOut": null, "totalCost": 25000, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 13, "guestId": 17, "roomId": 11, "bookingId": 17, "actualCheckIn": "2026-09-01T13:30:00", "actualCheckOut": null, "totalCost": 37500, "checkedInBy": "reception2", "checkedOutBy": null },
+    { "id": 14, "guestId": 19, "roomId": 17, "bookingId": 19, "actualCheckIn": "2026-09-08T15:00:00", "actualCheckOut": null, "totalCost": 22000, "checkedInBy": "reception1", "checkedOutBy": null },
+    { "id": 15, "guestId": 21, "roomId": 5, "bookingId": 21, "actualCheckIn": "2026-09-15T14:00:00", "actualCheckOut": null, "totalCost": 20000, "checkedInBy": "reception2", "checkedOutBy": null }
+]

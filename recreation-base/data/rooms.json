@@ -1,0 +1,22 @@
+[
+    { "id": 1, "roomNumber": "101", "roomType": "Эконом", "floor": 1, "capacity": 1, "pricePerDay": 2500, "status": "Свободен" },
+    { "id": 2, "roomNumber": "102", "roomType": "Эконом", "floor": 1, "capacity": 1, "pricePerDay": 2500, "status": "Свободен" },
+    { "id": 3, "roomNumber": "103", "roomType": "Эконом", "floor": 1, "capacity": 2, "pricePerDay": 2800, "status": "Свободен" },
+    { "id": 4, "roomNumber": "104", "roomType": "Эконом", "floor": 1, "capacity": 2, "pricePerDay": 2800, "status": "Свободен" },
+    { "id": 5, "roomNumber": "201", "roomType": "Стандарт", "floor": 2, "capacity": 2, "pricePerDay": 4000, "status": "Свободен" },
+    { "id": 6, "roomNumber": "202", "roomType": "Стандарт", "floor": 2, "capacity": 2, "pricePerDay": 4000, "status": "Занят" },
+    { "id": 7, "roomNumber": "203", "roomType": "Стандарт", "floor": 2, "capacity": 3, "pricePerDay": 4500, "status": "Свободен" },
+    { "id": 8, "roomNumber": "204", "roomType": "Стандарт", "floor": 2, "capacity": 2, "pricePerDay": 4000, "status": "Свободен" },
+    { "id": 9, "roomNumber": "301", "roomType": "Люкс", "floor": 3, "capacity": 2, "pricePerDay": 7500, "status": "Свободен" },
+    { "id": 10, "roomNumber": "302", "roomType": "Люкс", "floor": 3, "capacity": 3, "pricePerDay": 8500, "status": "Свободен" },
+    { "id": 11, "roomNumber": "303", "roomType": "Люкс", "floor": 3, "capacity": 2, "pricePerDay": 7500, "status": "Свободен" },
+    { "id": 12, "roomNumber": "401", "roomType": "Семейный", "floor": 4, "capacity": 4, "pricePerDay": 6000, "status": "Свободен" },
+    { "id": 13, "roomNumber": "402", "roomType": "Семейный", "floor": 4, "capacity": 4, "pricePerDay": 6000, "status": "Свободен" },
+    { "id": 14, "roomNumber": "403", "roomType": "Семейный", "floor": 4, "capacity": 5, "pricePerDay": 7000, "status": "Свободен" },
+    { "id": 15, "roomNumber": "501", "roomType": "Стандарт+", "floor": 5, "capacity": 2, "pricePerDay": 5000, "status": "Свободен" },
+    { "id": 16, "roomNumber": "502", "roomType": "Стандарт+", "floor": 5, "capacity": 2, "pricePerDay": 5000, "status": "Свободен" },
+    { "id": 17, "roomNumber": "503", "roomType": "Стандарт+", "floor": 5, "capacity": 3, "pricePerDay": 5500, "status": "Свободен" },
+    { "id": 18, "roomNumber": "601", "roomType": "Президентский люкс", "floor": 6, "capacity": 4, "pricePerDay": 15000, "status": "Свободен" },
+    { "id": 19, "roomNumber": "602", "roomType": "Президентский люкс", "floor": 6, "capacity": 4, "pricePerDay": 15000, "status": "Свободен" },
+    { "id": 20, "roomNumber": "603", "roomType": "Президентский люкс", "floor": 6, "capacity": 6, "pricePerDay": 18000, "status": "Свободен" }
+]
